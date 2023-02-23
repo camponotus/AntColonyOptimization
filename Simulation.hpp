@@ -16,6 +16,7 @@ public:
     void Action();
 
     void InsertPoint(sf::Vector2f pos);
+    void Reset();
     void Clear();
     void Render(sf::RenderTarget &target);
 
@@ -27,6 +28,14 @@ private:
         sf::RectangleShape shape;
     };
 
+    struct Point
+    {
+        sf::Vector2f pos;
+        sf::CircleShape shape;
+    };
+
     std::vector<Edge> _edges;
-    std::vector<sf::CircleShape> _points;
+    std::vector<Point> _points;
+
+    std::vector<int> traverse(int pointNum);
 };

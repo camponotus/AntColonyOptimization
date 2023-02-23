@@ -16,7 +16,7 @@ int main()
     sf::ContextSettings settings;
     settings.antialiasingLevel = ANTIALIAS_LEVEL;
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
-                            "AOC - window",
+                            "ACO - window",
                             sf::Style::Close | sf::Style::Titlebar,
                             settings);
     window.setFramerateLimit(FRAME_LIMIT);
@@ -32,13 +32,15 @@ int main()
     sf::RectangleShape pannel(sf::Vector2f(370, 160));
     pannel.setFillColor(sf::Color(96, 96, 96, 160));
     sf::Rect rect_pannel = pannel.getGlobalBounds();
-    Button button_run(sf::FloatRect(10, 10, 100, 30), [&running]
-                      { std::cout << "run/pause" << std::endl;
-                        running = running ? false : true; });
-    Button button_stop(sf::FloatRect(130, 10, 100, 30), []
-                       { std::cout << "stop" << std::endl; });
-    Button button_reset(sf::FloatRect(250, 10, 100, 30), [&simulation]
-                        { std::cout << "reset" << std::endl;
+    Button button_start(sf::FloatRect(10, 10, 100, 30), [&running, &simulation]
+                        { std::cout << "restart" << std::endl;
+                        simulation.Reset();
+                        running = true; });
+    Button button_pause(sf::FloatRect(130, 10, 100, 30), [&running]
+                        { std::cout << "pause" << std::endl;
+                         running = running? false : true; });
+    Button button_clear(sf::FloatRect(250, 10, 100, 30), [&simulation]
+                        { std::cout << "clear" << std::endl;
                           simulation.Clear(); });
     Slider slider_alpha(sf::FloatRect(10, 50, 340, 10), [&simulation](float rate)
                         { float alpha = rate * 5;
@@ -76,12 +78,12 @@ int main()
                 {
                     if (rect_pannel.contains(pos))
                     {
-                        if (button_run.Contains(pos))
-                            button_run.Click();
-                        if (button_stop.Contains(pos))
-                            button_stop.Click();
-                        if (button_reset.Contains(pos))
-                            button_reset.Click();
+                        if (button_start.Contains(pos))
+                            button_start.Click();
+                        if (button_pause.Contains(pos))
+                            button_pause.Click();
+                        if (button_clear.Contains(pos))
+                            button_clear.Click();
                         if (slider_alpha.Contains(pos))
                         {
                             slider_alpha.Click();
@@ -164,9 +166,9 @@ int main()
 
         simulation.Render(window);
         window.draw(pannel);
-        button_run.Render(window);
-        button_stop.Render(window);
-        button_reset.Render(window);
+        button_start.Render(window);
+        button_pause.Render(window);
+        button_clear.Render(window);
         slider_alpha.Render(window);
         slider_beta.Render(window);
         slider_rho.Render(window);
