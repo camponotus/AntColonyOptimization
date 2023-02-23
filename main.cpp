@@ -29,16 +29,17 @@ int main()
     sf::Time interval;
 
     // - Set UI
-    sf::RectangleShape pannel(sf::Vector2f(370, 160));
+    sf::RectangleShape pannel(sf::Vector2f(370, 180));
     pannel.setFillColor(sf::Color(96, 96, 96, 160));
     sf::Rect rect_pannel = pannel.getGlobalBounds();
     Button button_start(sf::FloatRect(10, 10, 100, 30), [&running, &simulation]
                         { std::cout << "restart" << std::endl;
-                        simulation.Reset();
-                        running = true; });
-    Button button_pause(sf::FloatRect(130, 10, 100, 30), [&running]
-                        { std::cout << "pause" << std::endl;
-                         running = running? false : true; });
+                          simulation.Reset();
+                          running = true; });
+    Button button_pause(sf::FloatRect(130, 10, 100, 30), [&running, &simulation]
+                        { std::cout << "stop" << std::endl;
+                          simulation.Set(0);
+                          running = false; });
     Button button_clear(sf::FloatRect(250, 10, 100, 30), [&simulation]
                         { std::cout << "clear" << std::endl;
                           simulation.Clear(); });
@@ -58,7 +59,11 @@ int main()
                     { float q = rate * 100;
                       simulation.q = q;
                       std::cout << "q = " << q << std::endl; });
-    Slider slider_interval(sf::FloatRect(10, 140, 340, 10), [&interval](float rate)
+    Slider slider_k(sf::FloatRect(10, 140, 340, 10), [&simulation](float rate)
+                    { float k = rate * 100 + 1;
+                      simulation.antNum = k;
+                      std::cout << "k = " << k << std::endl; });
+    Slider slider_interval(sf::FloatRect(10, 160, 340, 10), [&interval](float rate)
                            { interval = sf::seconds(rate/4);
                              std::cout << "interval = " << interval.asSeconds() << std::endl; });
 
@@ -104,6 +109,11 @@ int main()
                             slider_q.Click();
                             slider_q.Slide(pos);
                         }
+                        if (slider_k.Contains(pos))
+                        {
+                            slider_k.Click();
+                            slider_k.Slide(pos);
+                        }
                         if (slider_interval.Contains(pos))
                         {
                             slider_interval.Click();
@@ -128,6 +138,7 @@ int main()
                     slider_beta.Release();
                     slider_rho.Release();
                     slider_q.Release();
+                    slider_k.Release();
                     slider_interval.Release();
                     break;
                 }
@@ -140,6 +151,7 @@ int main()
                 slider_beta.Slide(pos);
                 slider_rho.Slide(pos);
                 slider_q.Slide(pos);
+                slider_k.Slide(pos);
                 slider_interval.Slide(pos);
                 break;
             }
@@ -173,6 +185,7 @@ int main()
         slider_beta.Render(window);
         slider_rho.Render(window);
         slider_q.Render(window);
+        slider_k.Render(window);
         slider_interval.Render(window);
 
         window.display();

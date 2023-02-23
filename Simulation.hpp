@@ -17,6 +17,7 @@ public:
 
     void InsertPoint(sf::Vector2f pos);
     void Reset();
+    void Set(float s);
     void Clear();
     void Render(sf::RenderTarget &target);
 
@@ -36,6 +37,9 @@ private:
 
     std::vector<Edge> _edges;
     std::vector<Point> _points;
+    
+    std::vector<int> _bestPath;
+    float _bestLength;
 
     std::vector<int> traverse(int pointNum);
 };

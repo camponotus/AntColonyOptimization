@@ -1,4 +1,5 @@
 #include <cmath>
+#include <limits>
 #include <random>
 #include <utility>
 
@@ -60,7 +61,7 @@ std::vector<int> Simulation::traverse(int pointNum)
                 float tau_pow = std::pow(_edges[idx].strength, alpha);
                 float eta_pow = std::pow(1 / _edges[idx].length, beta);
                 float weigth = tau_pow * eta_pow;
-                desirable[j] = weigth ? weigth : 0.00000001f;
+                desirable[j] = weigth ? weigth : std::numeric_limits<float>::min();
             }
         }
 
@@ -81,7 +82,8 @@ std::vector<int> Simulation::traverse(int pointNum)
 // class Simulation
 Simulation::Simulation()
     : alpha(0), beta(0), rho(0), q(0), sd(1),
-      antNum(40)
+      antNum(1),
+      _bestLength(std::numeric_limits<float>::max())
 {
 }
 
@@ -102,6 +104,11 @@ void Simulation::Action()
         float length = 0;
         for (int p : path)
             length += _edges[p].length;
+        if(length < _bestLength)
+        {
+            _bestLength = length;
+            _bestPath = path;
+        }
         float deltaTau = q / length;
         for (int p : path)
             sigma_deltaTau[p] += deltaTau;
@@ -117,6 +124,9 @@ void Simulation::Action()
         sf::Uint8 br = 255 * strength;
         _edges[i].shape.setFillColor(sf::Color(255, 255, 255, br));
     }
+
+    for (int p : _bestPath)
+        _edges[p].shape.setFillColor(sf::Color::Green);
 }
 
 void Simulation::InsertPoint(sf::Vector2f pos)
@@ -131,7 +141,8 @@ void Simulation::InsertPoint(sf::Vector2f pos)
         sf::Vector2f v = _points[i].pos - pos;
         float length = getLength(v);
         edges[i].length = length;
-        edges[i].strength = sd;
+        edges[i].strength = 0;
+        edges[i].shape.setFillColor(sf::Color::Transparent);
         edges[i].shape.setSize(sf::Vector2f(length, EdgeThickness));
         edges[i].shape.setOrigin(0, EdgeThickness / 2.f);
         edges[i].shape.setPosition(pos);
@@ -145,6 +156,8 @@ void Simulation::InsertPoint(sf::Vector2f pos)
     point.shape.setPosition(pos);
     point.shape.setOrigin(Radius, Radius);
     _points.push_back(point);
+
+    _bestLength =  std::numeric_limits<float>::max();
 }
 
 void Simulation::Reset()
@@ -152,7 +165,16 @@ void Simulation::Reset()
     for (auto &e : _edges)
     {
         e.strength = sd;
-        e.shape.setFillColor(sf::Color::White);
+        e.shape.setFillColor(sf::Color::Transparent);
+    }
+}
+
+void Simulation::Set(float s)
+{
+    for (auto &e : _edges)
+    {
+        e.strength = s;
+        e.shape.setFillColor(sf::Color(255, 255, 255, 255 * s));
     }
 }
 
