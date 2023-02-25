@@ -28,7 +28,7 @@ public:
 
 private:
     float _rate;
-    bool _graped;
+    bool _grabbed;
     sf::FloatRect _collider;
     std::function<void(float)> _onSlide;
     sf::RectangleShape _track;

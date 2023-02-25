@@ -28,7 +28,7 @@ void Button::Render(sf::RenderTarget &target)
 // class Slider
 Slider::Slider(sf::FloatRect rect, std::function<void(float)> onSlide, float rate)
     : _rate(rate),
-      _graped(false),
+      _grabbed(false),
       _collider(rect),
       _onSlide(onSlide),
       _track(sf::Vector2f(rect.width, rect.height))
@@ -63,17 +63,17 @@ bool Slider::Contains(const sf::Vector2f &pos)
 
 void Slider::Click()
 {
-    _graped = true;
+    _grabbed = true;
 }
 
 void Slider::Release()
 {
-    _graped = false;
+    _grabbed = false;
 }
 
 void Slider::Slide(const sf::Vector2f &pos)
 {
-    if (!_graped)
+    if (!_grabbed)
         return;
 
     float dx = pos.x - _track.getPosition().x;
